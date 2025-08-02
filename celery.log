@@ -2899,3 +2899,6 @@ TypeError: The `fields` option must be a list or tuple or "__all__". Got str.
 D:\Eligo-database\eligodb\db\serializers.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+D:\Eligo-database\eligodb\db\urls.py changed, reloading.
+Watching for file changes with StatReloader

@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('',views.home,name='home'),
@@ -31,4 +33,4 @@ urlpatterns = [
     path('api/call-logs/', views.CallLogCreateView.as_view(), name='call-log-create'),
     path('api/leads/<int:pk>/', views.LeadRetrieveUpdateView.as_view(), name='lead-detail'),
 
-]
+]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
