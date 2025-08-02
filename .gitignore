@@ -1,1 +1,8 @@
 .env
+credentials.json
+oauth_credentials.json
+*.json
+*.env
+*.sqlite3
+__pycache__/
+*.pyc
