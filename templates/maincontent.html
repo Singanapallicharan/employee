@@ -1,0 +1,451 @@
+<div class="main-content " id="employee-applied">
+  <h2>Employee - Applied <button id="add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="employee-table">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Email</th>
+        <th>Applied Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="employee-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal (simplified) -->
+<div id="addModal" class="modal hidden">
+  <form id="add-form">
+    <input type="text" name="employee_id" placeholder="Employee ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <input type="text" name="phone" placeholder="Phone" required />
+    <input type="text" name="location" placeholder="Location" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <select name="status" required>
+      <option value="Applied">Applied</option>
+      <option value="Selected">Selected</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="main-content hidden" id="employee-selected">
+  <h2>Employee - Selected <button onclick="openSelectedAddModal()">➕ Add</button></h2>
+
+  <table class="sheet-table" id="selected-table">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Email</th>
+        <th>Applied Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="selected-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Selected -->
+<div id="selectedAddModal" class="modal hidden">
+  <form id="selected-add-form">
+    <input type="text" name="employee_id" placeholder="Employee ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <input type="text" name="phone" placeholder="Phone" required />
+    <input type="text" name="location" placeholder="Location" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <!-- In your HTML, make sure status options match exactly what your backend expects -->
+    <select onchange="updateStatus(${emp.id}, this.value)">
+    <option value="applied" ${emp.status.toLowerCase() === 'applied' ? 'selected' : ''}>Applied</option>
+    <option value="selected" ${emp.status.toLowerCase() === 'selected' ? 'selected' : ''}>Selected</option>
+    <option value="active" ${emp.status.toLowerCase() === 'active' ? 'selected' : ''}>Active</option>
+    <option value="inactive" ${emp.status.toLowerCase() === 'inactive' ? 'selected' : ''}>Inactive</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="main-content hidden" id="employee-active">
+  <h2>Employee - Active <button id="active-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="active-table">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Email</th>
+        <th>Join Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="active-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Active -->
+<div id="activeAddModal" class="modal hidden">
+  <form id="active-add-form">
+    <input type="text" name="employee_id" placeholder="Employee ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <input type="text" name="phone" placeholder="Phone" required />
+    <input type="text" name="location" placeholder="Location" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="hidden" name="status" value="active" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div class="main-content hidden" id="employee-inactive">
+  <h2>Employee - Inactive <button id="inactive-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="inactive-table">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Email</th>
+        <th>Join Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="inactive-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Inactive -->
+<div id="inactiveAddModal" class="modal hidden">
+  <form id="inactive-add-form">
+    <input type="text" name="employee_id" placeholder="Employee ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <input type="text" name="phone" placeholder="Phone" required />
+    <input type="text" name="location" placeholder="Location" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="hidden" name="status" value="inactive" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="main-content hidden" id="student-registered">
+  <h2>Student - Registered <button id="registered-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="registered-table">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Department</th>
+        <th>Enrollment Date</th>
+        <th>Certificate Status</th>
+        <th>Course Duration</th>
+        <th>Passed Out Year</th>
+        <th>Last Login</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="registered-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Registered Students -->
+<div id="registeredAddModal" class="modal hidden">
+  <form id="registered-add-form">
+    <input type="text" name="student_id" placeholder="Student ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="M">Male</option>
+      <option value="F">Female</option>
+      <option value="O">Other</option>
+    </select>
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <input type="text" name="city" placeholder="City" required />
+    <input type="text" name="country" placeholder="Country" required />
+    <input type="text" name="department" placeholder="Department" required />
+    <input type="date" name="enrollment_date" placeholder="Enrollment Date" required />
+    <select name="certificate_status" required>
+      <option value="">Certificate Status</option>
+      <option value="issued">Issued</option>
+      <option value="not_issued">Not Issued</option>
+    </select>
+    <input type="date" name="course_start_date" placeholder="Course Start Date" required />
+    <input type="date" name="course_end_date" placeholder="Course End Date" required />
+    <input type="number" name="passed_out_year" placeholder="Passed Out Year" />
+    <select name="status" required>
+      <option value="registered">Registered</option>
+      <option value="not_registered">Not Registered</option>
+      <option value="completed">Completed</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div class="main-content hidden" id="student-not-registered">
+  <h2>Student - Not Registered <button id="not-registered-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="not-registered-table">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Department</th>
+        <th>Created At</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="not-registered-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Not Registered Students -->
+<div id="notRegisteredAddModal" class="modal hidden">
+  <form id="not-registered-add-form">
+    <input type="text" name="student_id" placeholder="Student ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <select name="gender">
+      <option value="">Gender</option>
+      <option value="M">Male</option>
+      <option value="F">Female</option>
+      <option value="O">Other</option>
+    </select>
+    <input type="text" name="city" placeholder="City" />
+    <input type="text" name="country" placeholder="Country" />
+    <input type="text" name="department" placeholder="Department" />
+    <input type="hidden" name="status" value="not_registered" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div class="main-content hidden" id="student-completed">
+  <h2>Student - Completed <button id="completed-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="completed-table">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Location</th>
+        <th>Department</th>
+        <th>Course Duration</th>
+        <th>Passed Out Year</th>
+        <th>Certificate Status</th>
+        <th>Certificate Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="completed-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Completed Students -->
+<div id="completedAddModal" class="modal hidden">
+  <form id="completed-add-form">
+    <input type="text" name="student_id" placeholder="Student ID" required />
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <select name="gender" required>
+      <option value="">Gender</option>
+      <option value="M">Male</option>
+      <option value="F">Female</option>
+      <option value="O">Other</option>
+    </select>
+    <input type="text" name="city" placeholder="City" />
+    <input type="text" name="country" placeholder="Country" />
+    <input type="text" name="department" placeholder="Department" />
+    <input type="date" name="course_start_date" placeholder="Course Start Date" />
+    <input type="date" name="course_end_date" placeholder="Course End Date" required />
+    <input type="number" name="passed_out_year" placeholder="Passed Out Year" />
+    <select name="certificate_status">
+      <option value="issued">Issued</option>
+      <option value="not_issued">Not Issued</option>
+    </select>
+    <input type="date" name="certificate_issue_date" placeholder="Certificate Issue Date" />
+    <input type="hidden" name="status" value="completed" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="main-content hidden" id="lead-new">
+  <h2>Lead - New <button id="new-lead-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="new-lead-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Source</th>
+        <th>Interest</th>
+        <th>Created At</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="new-lead-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for New Leads -->
+<div id="newLeadAddModal" class="modal hidden">
+  <form id="new-lead-add-form">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <select name="source" required>
+      <option value="">Select Source</option>
+      <option value="website">Website</option>
+      <option value="referral">Referral</option>
+      <option value="event">Event</option>
+      <option value="social_media">Social Media</option>
+    </select>
+    <textarea name="interest" placeholder="What are they interested in?"></textarea>
+    <input type="hidden" name="status" value="new" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div class="main-content hidden" id="lead-interested">
+  <h2>Lead - Interested <button id="interested-lead-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="interested-lead-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Source</th>
+        <th>Interest</th>
+        <th>Notes</th>
+        <th>Created At</th>
+        <th>Last Updated</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="interested-lead-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Interested Leads -->
+<div id="interestedLeadAddModal" class="modal hidden">
+  <form id="interested-lead-add-form">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <select name="source" required>
+      <option value="">Select Source</option>
+      <option value="website">Website</option>
+      <option value="referral">Referral</option>
+      <option value="event">Event</option>
+      <option value="social_media">Social Media</option>
+    </select>
+    <textarea name="interest" placeholder="What are they interested in?" required></textarea>
+    <textarea name="notes" placeholder="Additional notes"></textarea>
+    <input type="hidden" name="status" value="interested" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div class="main-content hidden" id="lead-not-interested">
+  <h2>Lead - Not Interested <button id="not-interested-lead-add-btn">➕ Add</button></h2>
+
+  <table class="sheet-table" id="not-interested-lead-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Source</th>
+        <th>Original Interest</th>
+        <th>Reason</th>
+        <th>Created At</th>
+        <th>Last Updated</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="not-interested-lead-body"></tbody>
+  </table>
+</div>
+
+<!-- Add Modal for Not Interested Leads -->
+<div id="notInterestedLeadAddModal" class="modal hidden">
+  <form id="not-interested-lead-add-form">
+    <input type="text" name="first_name" placeholder="First Name" required />
+    <input type="text" name="last_name" placeholder="Last Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="phone" placeholder="Phone" required />
+    <select name="source" required>
+      <option value="">Select Source</option>
+      <option value="website">Website</option>
+      <option value="referral">Referral</option>
+      <option value="event">Event</option>
+      <option value="social_media">Social Media</option>
+    </select>
+    <textarea name="interest" placeholder="What were they interested in?"></textarea>
+    <textarea name="reason" placeholder="Reason for not being interested" required></textarea>
+    <input type="hidden" name="status" value="not_interested" />
+    <button type="submit">Submit</button>
+  </form>
+</div>

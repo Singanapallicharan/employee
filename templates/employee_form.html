@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="bi bi-person-badge"></i> {{ title }}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <h4 class="mb-4 text-primary"><i class="bi bi-person-lines-fill"></i> Personal Information</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">First Name <span class="text-danger">*</span></label>
+                            {{ form.first_name }}
+                            <div class="invalid-feedback">
+                                Please provide a first name.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                            {{ form.last_name }}
+                            <div class="invalid-feedback">
+                                Please provide a last name.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                            {{ form.date_of_birth }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Gender <span class="text-danger">*</span></label>
+                            {{ form.gender }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">National ID <span class="text-danger">*</span></label>
+                            {{ form.national_id }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="bi bi-telephone"></i> Contact Information</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Phone <span class="text-danger">*</span></label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Emergency Contact</label>
+                            {{ form.emergency_contact }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Address <span class="text-danger">*</span></label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">City <span class="text-danger">*</span></label>
+                            {{ form.city }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Country <span class="text-danger">*</span></label>
+                            {{ form.country }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="bi bi-briefcase"></i> Professional Information</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Employee ID <span class="text-danger">*</span></label>
+                            {{ form.employee_id }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                            {{ form.department }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Job Title <span class="text-danger">*</span></label>
+                            {{ form.job_title }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Employment Type <span class="text-danger">*</span></label>
+                            {{ form.employment_type }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Join Date <span class="text-danger">*</span></label>
+                            {{ form.join_date }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Salary <span class="text-danger">*</span></label>
+                            {{ form.salary }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="bi bi-mortarboard"></i> Education</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Highest Qualification</label>
+                            {{ form.highest_qualification }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">University</label>
+                            {{ form.university }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="bi bi-bank"></i> Bank Details</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Bank Name</label>
+                            {{ form.bank_name }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Account Number</label>
+                            {{ form.account_number }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Branch</label>
+                            {{ form.branch }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="bi bi-file-earmark-text"></i> Government Compliance</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Tax ID</label>
+                            {{ form.tax_id }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Social Security</label>
+                            {{ form.social_security }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <div class="mb-4">
+                    <label class="form-label">Profile Picture</label>
+                    {{ form.profile_pic }}
+                    {% if form.instance.profile_pic %}
+                        <div class="mt-2">
+                            <small>Current: {{ form.instance.profile_pic.name }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% if form.instance.pk %}{% url 'view_employee' form.instance.pk %}{% else %}{% url 'employee_list' %}{% endif %}" 
+                       class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> {% if form.instance.pk %}Update{% else %}Save{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 0.35rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+    
+    .was-validated .form-control:invalid ~ .invalid-feedback,
+    .was-validated .form-control:invalid ~ .invalid-tooltip,
+    .form-control.is-invalid ~ .invalid-feedback,
+    .form-control.is-invalid ~ .invalid-tooltip {
+        display: block;
+    }
+    
+    hr {
+        margin: 2rem 0;
+        color: inherit;
+        border: 0;
+        border-top: 1px solid;
+        opacity: 0.25;
+    }
+</style>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+  
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+  
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+{% endblock %}

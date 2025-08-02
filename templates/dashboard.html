@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="aws-dashboard">
+    <!-- Dashboard Header -->
+    <div class="aws-header">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard Overview</h2>
+        <div class="aws-header-actions">
+            <span class="aws-update-status">
+                <i class="bi bi-clock-history"></i> Updated: {% now "DATETIME_FORMAT" %}
+            </span>
+            <button class="aws-refresh-btn">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Metrics Overview -->
+    <div class="aws-metrics">
+        <!-- Employees Metric -->
+        <div class="aws-metric-card">
+            <div class="metric-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value">{{ employees_count|intcomma }}</div>
+                <div class="metric-title">Employees</div>
+                <a href="{% url 'add_employee' %}" class="metric-link">
+                    View all employees <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Students Metric -->
+        <div class="aws-metric-card">
+            <div class="metric-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value">{{ students_count|intcomma }}</div>
+                <div class="metric-title">Students</div>
+                <a href="{% url 'add_student' %}" class="metric-link">
+                    View all students <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Leads Metric -->
+        <div class="aws-metric-card">
+            <div class="metric-icon">
+                <i class="bi bi-telephone-outbound-fill"></i>
+            </div>
+            <div class="metric-content">
+                <div class="metric-value">{{ leads_count|intcomma }}</div>
+                <div class="metric-title">Leads</div>
+                <a href="{% url 'add_lead' %}" class="metric-link">
+                    View all leads <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="aws-content-section">
+        <div class="aws-section-header">
+            <h3><i class="bi bi-clock"></i> Recent Activity</h3>
+            <div class="aws-section-actions">
+                <div class="aws-view-options">
+                    <span class="active">Last 24 hours</span>
+                    <span>Last 7 days</span>
+                    <span>Last 30 days</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="aws-section-content">
+            <div class="aws-tab-container">
+                <!-- Employees Tab -->
+                <div class="aws-tab active">
+                    <div class="aws-table-container">
+                        <table class="aws-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Join Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in recent_employees %}
+                                <tr>
+                                    <td>{{ employee.employee_id }}</td>
+                                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                                    <td>{{ employee.department }}</td>
+                                    <td>{{ employee.join_date|date:"M d, Y" }}</td>
+                                    <td><span class="aws-status-badge active">Active</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="aws-empty-state">No recent employees</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Visualization Section -->
+    <div class="aws-content-section">
+        <div class="aws-section-header">
+            <h3><i class="bi bi-bar-chart"></i> Leads Conversion</h3>
+        </div>
+        <div class="aws-section-content">
+            <div class="aws-chart-container">
+                <canvas id="leadsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Leads Status Chart
+    const ctx = document.getElementById('leadsChart');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ lead_status_labels|safe }},
+            datasets: [{
+                data: {{ lead_status_data|safe }},
+                backgroundColor: [
+                    '#4e73df',  // New
+                    '#1cc88a',  // Contacted
+                    '#36b9cc',  // Qualified
+                    '#f6c23e'   // Lost
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

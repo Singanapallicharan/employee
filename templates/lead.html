@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lead Management{% endblock %}
+
+{% block content %}
+<div class="lead-container">
+    <!-- Page Header with Status Filter -->
+    <div class="page-header">
+        <h2><i class="bi bi-telephone-outbound"></i> Lead Management</h2>
+        <div class="header-actions">
+            <a href="{% url 'add_lead' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Lead
+            </a>
+            <div class="status-filter">
+                <select class="form-select" id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="qualified">Qualified</option>
+                    <option value="lost">Lost</option>
+                </select>
+            </div>
+            <div class="search-box">
+                <input type="text" id="leadSearch" placeholder="Search leads...">
+                <i class="bi bi-search"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lead Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="leadTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Lead</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Source</th>
+                            <th>Last Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                        <tr data-status="{{ lead.status }}">
+                            <td>{{ lead.id|stringformat:"06d" }}</td>
+                            <td>
+                                <div class="lead-info">
+                                    <strong>{{ lead.name }}</strong>
+                                    <small>{{ lead.email }}</small>
+                                </div>
+                            </td>
+                            <td>{{ lead.company|default:"-" }}</td>
+                            <td>
+                                <span class="badge lead-status-{{ lead.status }}">
+                                    {{ lead.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ lead.source|default:"-" }}</td>
+                            <td>
+                                {% if lead.last_contact %}
+                                {{ lead.last_contact|date:"M d, Y" }}
+                                {% else %}
+                                <span class="text-muted">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'edit_lead' lead.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="{% url 'view_lead' lead.id %}" class="btn btn-sm btn-outline-info" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                            title="Delete" 
+                                            data-id="{{ lead.id }}"
+                                            data-name="{{ lead.name }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <p>No leads found</p>
+                                    <a href="{% url 'add_lead' %}" class="btn btn-primary mt-2">
+                                        Add Your First Lead
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="pagination-info">
+                    Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} leads
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="leadName"></strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Lead</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Lead Management Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('leadSearch');
+    const table = document.getElementById('leadTable');
+    
+    searchInput.addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 1; i < rows.length; i++) {
+            const rowText = rows[i].textContent.toLowerCase();
+            const rowStatus = rows[i].getAttribute('data-status');
+            
+            const matchesSearch = rowText.includes(searchValue);
+            const matchesStatus = statusFilter === 'all' || rowStatus === statusFilter;
+            
+            rows[i].style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+        }
+    });
+
+    // Status filter functionality
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        searchInput.dispatchEvent(new Event('keyup'));
+    });
+
+    // Delete modal setup
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const deleteForm = document.getElementById('deleteForm');
+    const leadName = document.getElementById('leadName');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const leadId = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            leadName.textContent = name;
+            deleteForm.action = `/leads/${leadId}/delete/`;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        });
+    });
+});
+</script>
+{% endblock %}

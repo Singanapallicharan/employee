@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="bi bi-search"></i> Search Results for "{{ search_query }}"</h3>
+        </div>
+        <div class="card-body">
+            {% if employees or students or leads %}
+                {% if employees %}
+                <div class="mb-4">
+                    <h5>Employees</h5>
+                    <div class="list-group">
+                        {% for employee in employees %}
+                        <a href="{% url 'view_employee' employee.pk %}" class="list-group-item list-group-item-action">
+                            {{ employee.first_name }} {{ employee.last_name }} ({{ employee.department }})
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if students %}
+                <div class="mb-4">
+                    <h5>Students</h5>
+                    <div class="list-group">
+                        {% for student in students %}
+                        <a href="{% url 'view_student' student.pk %}" class="list-group-item list-group-item-action">
+                            {{ student.first_name }} {{ student.last_name }} ({{ student.course }})
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if leads %}
+                <div class="mb-4">
+                    <h5>Leads</h5>
+                    <div class="list-group">
+                        {% for lead in leads %}
+                        <a href="{% url 'view_lead' lead.pk %}" class="list-group-item list-group-item-action">
+                            {{ lead.name }} ({{ lead.get_status_display }})
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No results found for "{{ search_query }}"
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

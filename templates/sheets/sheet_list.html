@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Connected Sheets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .list-group-item {
+            border-left: 0;
+            border-right: 0;
+            border-radius: 0 !important;
+        }
+        .list-group-item:first-child {
+            border-top: 0;
+        }
+        .list-group-item:last-child {
+            border-bottom: 0;
+        }
+        .sheet-status {
+            width: 80px;
+            text-align: center;
+        }
+        .sheet-actions {
+            min-width: 100px;
+            text-align: right;
+        }
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Your Connected Sheets</h2>
+            <a href="/sheets/add/" class="btn btn-primary">
+                <i class="bi bi-plus"></i> Add New Sheet
+            </a>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <!-- Sample Sheet 1 -->
+                    {% for sheet in sheets %}
+<div class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between align-items-center">
+        <div class="me-3">
+            <h5 class="mb-1">{{ sheet.get_sheet_type_display }}</h5>
+            <p class="mb-1 text-muted truncate">
+                <a href="{{ sheet.sheet_url }}" target="_blank">{{ sheet.sheet_url|truncatechars:60 }}</a>
+            </p>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="badge bg-{% if sheet.is_active %}success{% else %}secondary{% endif %} sheet-status me-3">
+                {% if sheet.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+            <small class="text-muted me-3">Last synced: {{ sheet.last_synced|default:"Never" }}</small>
+            <div class="sheet-actions">
+                <button class="btn btn-sm btn-outline-secondary me-1" title="Sync Now">
+                    <i class="bi bi-arrow-repeat"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-{% if sheet.is_active %}danger{% else %}success{% endif %}" 
+                        title="{% if sheet.is_active %}Disable{% else %}Enable{% endif %}">
+                    <i class="bi bi-power"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info m-3">
+    No sheets configured yet. <a href="{% url 'add_sheet' %}">Add your first sheet</a>.
+</div>
+{% endfor %}
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <!-- <div class="alert alert-info m-3">
+                        No sheets configured yet. <a href="/sheets/add/">Add your first sheet</a>.
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-center text-muted">
+            <small>Showing 2 of 2 connected sheets</small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // This would be replaced with your actual dynamic functionality
+        document.querySelectorAll('.list-group-item-action').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (!e.target.closest('.sheet-actions')) {
+                    // Navigate to sheet detail view
+                    console.log('Navigate to sheet details');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

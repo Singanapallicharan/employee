@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Management{% endblock %}
+
+{% block content %}
+<div class="student-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2><i class="bi bi-mortarboard"></i> Student Management</h2>
+        <div class="header-actions">
+            <a href="{% url 'add_student' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Student
+            </a>
+            <div class="search-box">
+                <input type="text" id="studentSearch" placeholder="Search students...">
+                <i class="bi bi-search"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th>Enrolled</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td>
+                                <div class="student-info">
+                                    <div class="avatar">
+                                        {% if student.profile_pic %}
+                                        <img src="{{ student.profile_pic.url }}" alt="{{ student.first_name }}">
+                                        {% else %}
+                                        <div class="avatar-initials">
+                                            {{ student.first_name|first }}{{ student.last_name|first }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="details">
+                                        <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+                                        <small>{{ student.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ student.course }}</td>
+                            <td>Year {{ student.year_level }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if student.status == 'active' %}bg-success
+                                    {% elif student.status == 'on_leave' %}bg-warning
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ student.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ student.enrollment_date|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'edit_student' student.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="{% url 'view_student' student.id %}" class="btn btn-sm btn-outline-info" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                            title="Delete" 
+                                            data-id="{{ student.id }}"
+                                            data-name="{{ student.first_name }} {{ student.last_name }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <p>No students found</p>
+                                    <a href="{% url 'add_student' %}" class="btn btn-primary mt-2">
+                                        Add Your First Student
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="pagination-info">
+                    Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} students
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="studentName"></strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Student</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Student Search and Delete Functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('studentSearch');
+    const table = document.getElementById('studentTable');
+    
+    searchInput.addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 1; i < rows.length; i++) {
+            const rowText = rows[i].textContent.toLowerCase();
+            rows[i].style.display = rowText.includes(searchValue) ? '' : 'none';
+        }
+    });
+
+    // Delete modal setup
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const deleteForm = document.getElementById('deleteForm');
+    const studentName = document.getElementById('studentName');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const studentId = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            studentName.textContent = name;
+            deleteForm.action = `/students/${studentId}/delete/`;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        });
+    });
+});
+</script>
+{% endblock %}

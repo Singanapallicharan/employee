@@ -1,0 +1,619 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Employee Management{% endblock %}
+
+{% block content %}
+<div class="employee-container">
+    <!-- Status Tabs -->
+    <div class="status-tabs mb-4">
+        <ul class="nav nav-tabs" id="employeeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications" type="button" role="tab">
+                    <i class="bi bi-file-earmark-text me-2"></i>Applications
+                    <span class="badge bg-secondary ms-2">{{ applications_count }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="selected-tab" data-bs-toggle="tab" data-bs-target="#selected" type="button" role="tab">
+                    <i class="bi bi-check-circle me-2"></i>Selected
+                    <span class="badge bg-info ms-2">{{ selected_count }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                    <i class="bi bi-person-check me-2"></i>Active
+                    <span class="badge bg-success ms-2">{{ active_count }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="inactive-tab" data-bs-toggle="tab" data-bs-target="#inactive" type="button" role="tab">
+                    <i class="bi bi-person-x me-2"></i>Inactive
+                    <span class="badge bg-danger ms-2">{{ inactive_count }}</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="employeeTabsContent">
+        <!-- Applications Tab -->
+        <div class="tab-pane fade show active" id="applications" role="tabpanel" aria-labelledby="applications-tab">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Application Pool</h5>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <input type="text" id="applicationsSearch" placeholder="Search applications...">
+                            <i class="bi bi-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="applicationsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Candidate</th>
+                                    <th>Position</th>
+                                    <th>Applied On</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in applications %}
+                                <tr>
+                                    <td>APP-{{ employee.id|stringformat:"04d" }}</td>
+                                    <td>
+                                        <a href="#" class="employee-link" data-bs-toggle="modal" data-bs-target="#employeeModal" data-id="{{ employee.id }}">
+                                            <div class="employee-info">
+                                                <div class="avatar">
+                                                    {% if employee.profile_pic %}
+                                                    <img src="{{ employee.profile_pic.url }}" alt="{{ employee.first_name }}">
+                                                    {% else %}
+                                                    <div class="avatar-initials">
+                                                        {{ employee.first_name|first }}{{ employee.last_name|first }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="details">
+                                                    <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
+                                                    <small>{{ employee.email }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{ employee.job_title }}</td>
+                                    <td>{{ employee.join_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">Under Review</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-success select-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-check-lg"></i> Select
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger reject-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-x-lg"></i> Reject
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="bi bi-file-earmark-excel"></i>
+                                            <p>No applications found</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Tab -->
+        <div class="tab-pane fade" id="selected" role="tabpanel" aria-labelledby="selected-tab">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Selected Candidates</h5>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <input type="text" id="selectedSearch" placeholder="Search selected...">
+                            <i class="bi bi-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="selectedTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Candidate</th>
+                                    <th>Position</th>
+                                    <th>Selected On</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in selected %}
+                                <tr>
+                                    <td>SEL-{{ employee.id|stringformat:"04d" }}</td>
+                                    <td>
+                                        <a href="#" class="employee-link" data-bs-toggle="modal" data-bs-target="#employeeModal" data-id="{{ employee.id }}">
+                                            <div class="employee-info">
+                                                <div class="avatar">
+                                                    {% if employee.profile_pic %}
+                                                    <img src="{{ employee.profile_pic.url }}" alt="{{ employee.first_name }}">
+                                                    {% else %}
+                                                    <div class="avatar-initials">
+                                                        {{ employee.first_name|first }}{{ employee.last_name|first }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="details">
+                                                    <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
+                                                    <small>{{ employee.email }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{ employee.job_title }}</td>
+                                    <td>{{ employee.join_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-info">Selected</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-success activate-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-person-check"></i> Activate
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary reject-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-x-lg"></i> Reject
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="bi bi-people"></i>
+                                            <p>No selected candidates</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tab -->
+        <div class="tab-pane fade" id="active" role="tabpanel" aria-labelledby="active-tab">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Active Employees</h5>
+                    <div class="header-actions">
+                        <a href="{% url 'add_employee' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Employee
+                        </a>
+                        <div class="search-box">
+                            <input type="text" id="activeSearch" placeholder="Search active...">
+                            <i class="bi bi-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="activeTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in active %}
+                                <tr>
+                                    <td>{{ employee.employee_id }}</td>
+                                    <td>
+                                        <a href="#" class="employee-link" data-bs-toggle="modal" data-bs-target="#employeeModal" data-id="{{ employee.id }}">
+                                            <div class="employee-info">
+                                                <div class="avatar">
+                                                    {% if employee.profile_pic %}
+                                                    <img src="{{ employee.profile_pic.url }}" alt="{{ employee.first_name }}">
+                                                    {% else %}
+                                                    <div class="avatar-initials">
+                                                        {{ employee.first_name|first }}{{ employee.last_name|first }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="details">
+                                                    <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
+                                                    <small>{{ employee.email }}</small>
+                                                    <div class="employee-meta">
+                                                        <span class="badge bg-info">{{ employee.get_gender_display }}</span>
+                                                        <span>{{ employee.city }}, {{ employee.country }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{ employee.department }}</td>
+                                    <td>{{ employee.job_title }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if employee.employment_type == 'full_time' %}bg-primary
+                                            {% elif employee.employment_type == 'part_time' %}bg-warning text-dark
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ employee.get_employment_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{% url 'edit_employee' employee.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-warning deactivate-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-person-dash"></i> Deactivate
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="bi bi-people"></i>
+                                            <p>No active employees</p>
+                                            <a href="{% url 'add_employee' %}" class="btn btn-primary mt-2">
+                                                Add Your First Employee
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inactive Tab -->
+        <div class="tab-pane fade" id="inactive" role="tabpanel" aria-labelledby="inactive-tab">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Inactive Employees</h5>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <input type="text" id="inactiveSearch" placeholder="Search inactive...">
+                            <i class="bi bi-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="inactiveTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Left On</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in inactive %}
+                                <tr>
+                                    <td>{{ employee.employee_id }}</td>
+                                    <td>
+                                        <a href="#" class="employee-link" data-bs-toggle="modal" data-bs-target="#employeeModal" data-id="{{ employee.id }}">
+                                            <div class="employee-info">
+                                                <div class="avatar">
+                                                    {% if employee.profile_pic %}
+                                                    <img src="{{ employee.profile_pic.url }}" alt="{{ employee.first_name }}">
+                                                    {% else %}
+                                                    <div class="avatar-initials">
+                                                        {{ employee.first_name|first }}{{ employee.last_name|first }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="details">
+                                                    <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
+                                                    <small>{{ employee.email }}</small>
+                                                    <div class="employee-meta">
+                                                        <span class="badge bg-info">{{ employee.get_gender_display }}</span>
+                                                        <span>{{ employee.city }}, {{ employee.country }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{ employee.department }}</td>
+                                    <td>{{ employee.job_title }}</td>
+                                    <td>{{ employee.termination_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-danger">Inactive</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-success reactivate-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-person-plus"></i> Reactivate
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                                    data-id="{{ employee.id }}"
+                                                    data-name="{{ employee.first_name }} {{ employee.last_name }}">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="bi bi-archive"></i>
+                                            <p>No inactive employees</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Detail Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="employeeModalBody">
+                <!-- Content will be loaded via AJAX -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Change Modals -->
+<div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusChangeModalTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="statusChangeModalText"></p>
+                <p class="text-muted">This action will be recorded in the employee's history.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="statusChangeForm" method="POST" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" id="statusChangeType">
+                    <button type="submit" class="btn" id="statusChangeButton">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to permanently delete <strong id="employeeName"></strong>?</p>
+                <p class="text-muted">All associated records will also be permanently removed.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tab functionality
+    const employeeTabs = new bootstrap.Tab(document.getElementById('applications-tab'));
+    
+    // Search functionality for each tab
+    function setupSearch(inputId, tableId) {
+        const searchInput = document.getElementById(inputId);
+        if (!searchInput) return;
+        
+        searchInput.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const rowText = rows[i].textContent.toLowerCase();
+                rows[i].style.display = rowText.includes(searchValue) ? '' : 'none';
+            }
+        });
+    }
+    
+    setupSearch('applicationsSearch', 'applicationsTable');
+    setupSearch('selectedSearch', 'selectedTable');
+    setupSearch('activeSearch', 'activeTable');
+    setupSearch('inactiveSearch', 'inactiveTable');
+    
+    // Employee detail modal
+    const employeeLinks = document.querySelectorAll('.employee-link');
+    employeeLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const employeeId = this.getAttribute('data-id');
+            const modalBody = document.getElementById('employeeModalBody');
+            
+            // Show loading spinner
+            modalBody.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+            
+            // Load employee details via AJAX
+            fetch(`/employees/${employeeId}/details/`)
+                .then(response => response.text())
+                .then(html => {
+                    modalBody.innerHTML = html;
+                })
+                .catch(error => {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger">
+                            Failed to load employee details. Please try again.
+                        </div>
+                    `;
+                });
+        });
+    });
+    
+    // Status change handlers
+    function setupStatusChange(buttons, action, title, text, buttonClass, buttonText) {
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const employeeId = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                
+                document.getElementById('statusChangeModalTitle').textContent = title;
+                document.getElementById('statusChangeModalText').textContent = text.replace('{name}', name);
+                document.getElementById('statusChangeType').value = action;
+                document.getElementById('statusChangeForm').action = `/employees/${employeeId}/change-status/`;
+                
+                const actionButton = document.getElementById('statusChangeButton');
+                actionButton.className = 'btn ' + buttonClass;
+                actionButton.textContent = buttonText;
+                
+                new bootstrap.Modal(document.getElementById('statusChangeModal')).show();
+            });
+        });
+    }
+    
+    // Set up all status change buttons
+    setupStatusChange(
+        document.querySelectorAll('.select-btn'),
+        'select',
+        'Select Candidate',
+        'Are you sure you want to select {name} for employment?',
+        'btn-success',
+        'Select'
+    );
+    
+    setupStatusChange(
+        document.querySelectorAll('.reject-btn'),
+        'reject',
+        'Reject Candidate',
+        'Are you sure you want to reject {name}?',
+        'btn-danger',
+        'Reject'
+    );
+    
+    setupStatusChange(
+        document.querySelectorAll('.activate-btn'),
+        'activate',
+        'Activate Employee',
+        'Are you sure you want to activate {name}?',
+        'btn-success',
+        'Activate'
+    );
+    
+    setupStatusChange(
+        document.querySelectorAll('.deactivate-btn'),
+        'deactivate',
+        'Deactivate Employee',
+        'Are you sure you want to deactivate {name}?',
+        'btn-warning',
+        'Deactivate'
+    );
+    
+    setupStatusChange(
+        document.querySelectorAll('.reactivate-btn'),
+        'reactivate',
+        'Reactivate Employee',
+        'Are you sure you want to reactivate {name}?',
+        'btn-success',
+        'Reactivate'
+    );
+    
+    // Delete modal setup
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const deleteForm = document.getElementById('deleteForm');
+    const employeeName = document.getElementById('employeeName');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const employeeId = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            employeeName.textContent = name;
+            deleteForm.action = `/employees/${employeeId}/delete/`;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        });
+    });
+});
+</script>
+{% endblock %}

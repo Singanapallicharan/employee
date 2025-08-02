@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lead.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Lead Details</h3>
+            <div>
+                <a href="{% url 'edit_lead' lead.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <h6>Status</h6>
+                        <span class="badge lead-status-{{ lead.status }}">
+                            {{ lead.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <h6>Contact Information</h6>
+                        <p>{{ lead.name }}<br>
+                        {{ lead.email }}<br>
+                        {{ lead.phone }}</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <h6>Company</h6>
+                        <p>{{ lead.company|default:"-" }}</p>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <h6>Last Contact</h6>
+                        <p>{{ lead.last_contact|date:"M d, Y"|default:"Never" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-item mt-4">
+                <h6>Notes</h6>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        {{ lead.notes|linebreaks|default:"No notes available" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

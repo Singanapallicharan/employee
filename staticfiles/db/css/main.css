@@ -1,0 +1,231 @@
+/* ===== AWS-STYLE OVERRIDES ===== */
+/* These styles will augment your existing classes with AWS-inspired styling */
+
+/* Main Layout Adjustments */
+body.admin-layout {
+  background-color: #fafafa;
+}
+
+/* Navbar - AWS Style */
+.navbar {
+  height: 60px;
+  background-color: #232f3e;
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  color: white !important;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand i {
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+  padding: 8px 15px;
+}
+
+.nav-link:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar - AWS Style */
+.sidebar {
+  width: 60px;
+  transition: var(--transition);
+  border-right: 1px solid #d5dbdb;
+}
+
+.sidebar:hover {
+  width: var(--sidebar-width);
+}
+
+.sidebar .nav-link {
+  padding: 12px 15px;
+  color: var(--dark-color) !important;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar .nav-link i {
+  font-size: 1.25rem;
+  min-width: 30px;
+}
+
+.sidebar .nav-link span {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar:hover .nav-link span {
+  opacity: 1;
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(78, 115, 223, 0.1);
+  color: var(--primary-color) !important;
+}
+
+.sidebar .nav-link:hover i {
+  color: var(--primary-color);
+}
+
+.sidebar .nav-link.active {
+  background-color: rgba(78, 115, 223, 0.1);
+  color: var(--primary-color) !important;
+  border-left: 3px solid var(--primary-color);
+}
+
+/* Main Content Adjustments */
+.main-content {
+  margin-left: 60px;
+  padding: 20px;
+  padding-top: 80px;
+  transition: var(--transition);
+}
+
+.sidebar:hover ~ .main-content {
+  margin-left: var(--sidebar-width);
+}
+
+/* Dashboard Cards - AWS Style */
+.content-container,
+.activity-card {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #d5dbdb;
+  transition: var(--transition);
+}
+
+.content-container:hover,
+.activity-card:hover {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.activity-card .card-header {
+  border-bottom: 1px solid #d5dbdb;
+}
+
+/* Stat Cards - AWS Style */
+.stat-card {
+  border-radius: 4px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #d5dbdb;
+  color: var(--dark-color);
+  background: white !important;
+}
+
+.stat-card:hover {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  transform: none;
+}
+
+/* Service Grid - AWS Style */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 15px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  border-radius: 4px;
+  border: 1px solid #d5dbdb;
+  background: white;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.service-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px 0 rgba(78, 115, 223, 0.2);
+}
+
+.service-icon {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(78, 115, 223, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+
+/* Tables - AWS Style */
+.table {
+  border-collapse: collapse;
+}
+
+.table th {
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #d5dbdb;
+}
+
+.table td {
+  border-bottom: 1px solid #d5dbdb;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background-color: rgba(78, 115, 223, 0.05);
+}
+
+/* Search Box - AWS Style */
+.search-box input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 15px 8px 35px;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-box i {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .sidebar {
+    margin-left: -60px;
+  }
+  
+  .sidebar:hover,
+  .sidebar.active {
+    margin-left: 0;
+    width: var(--sidebar-width);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .sidebar:hover ~ .main-content,
+  .sidebar.active ~ .main-content {
+    margin-left: var(--sidebar-width);
+  }
+}
